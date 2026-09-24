@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Toko Bangunan & Kalkulator RAB Kontrakan Samarinda</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                        },
+                        samarinda: {
+                            amber: '#d97706',
+                            emerald: '#059669',
+                            slate: '#334155'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; }
+            .print-shadow-none { box-shadow: none !important; border: 1px solid #ccc !important; }
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col text-slate-800">
+
+    <!-- Header / Navigation Bar -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-amber-500 text-slate-900 p-2 rounded-lg font-bold">
+                        <i class="fa-solid fa-house-chimney-crack text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold leading-tight">TB Samarinda Jaya</h1>
+                        <p class="text-xs text-amber-400 font-medium">Manajemen Toko & Kalkulator RAB Kontrakan</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="hidden md:flex space-x-2">
+                    <button onclick="switchTab('rab-calculator')" id="tab-btn-rab-calculator" class="nav-tab px-4 py-2 rounded-lg text-sm font-semibold transition-colors bg-amber-500 text-slate-900 shadow">
+                        <i class="fa-solid fa-calculator mr-2"></i>Kalkulator RAB Samarinda
+                    </button>
+                    <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="nav-tab px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
+                        <i class="fa-solid fa-boxes-stacked mr-2"></i>Katalog & Stok Material
+                    </button>
+                    <button onclick="switchTab('pos')" id="tab-btn-pos" class="nav-tab px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
+                        <i class="fa-solid fa-cash-register mr-2"></i>Kasir POS
+                    </button>
+                    <button onclick="switchTab('price-reference')" id="tab-btn-price-reference" class="nav-tab px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
+                        <i class="fa-solid fa-tags mr-2"></i>Harga Pasar Samarinda
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()" class="p-2 text-slate-300 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 px-4 py-3 space-y-2">
+            <button onclick="switchTab('rab-calculator'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-amber-400 bg-slate-900">
+                <i class="fa-solid fa-calculator mr-2"></i>Kalkulator RAB Samarinda
+            </button>
+            <button onclick="switchTab('inventory'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:bg-slate-700">
+                <i class="fa-solid fa-boxes-stacked mr-2"></i>Katalog & Stok Material
+            </button>
+            <button onclick="switchTab('pos'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:bg-slate-700">
+                <i class="fa-solid fa-cash-register mr-2"></i>Kasir POS
+            </button>
+            <button onclick="switchTab('price-reference'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:bg-slate-700">
+                <i class="fa-solid fa-tags mr-2"></i>Harga Pasar Samarinda
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- TAB 1: KALKULATOR RAB KONTRAKAN SAMARINDA -->
+        <section id="tab-rab-calculator" class="tab-content block space-y-6">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-slate-900 via-sky-900 to-slate-800 text-white p-6 rounded-2xl shadow-lg border border-sky-800/50">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-300 text-xs font-semibold rounded-full border border-amber-500/30 mb-2">
+                            <i class="fa-solid fa-location-dot mr-1"></i> Standar Wilayah Samarinda & Kaltim
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Kalkulator RAB Kontrakan Samarinda</h2>
+                        <p class="text-slate-300 text-sm mt-1 max-w-2xl">
+                            Hitung estimasi biaya bahan bangunan, pondasi (Ulin/Beton), upah tukang lokal, serta analisis ROI sewa harian/bulanan di kawasan Samarinda.
+                        </p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="window.print()" class="no-print px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                            <i class="fa-solid fa-print"></i> Cetak RAB
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Grid: Input Form & Dynamic Results -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Input Controls Form (5 cols) -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5 no-print">
+                    <h3 class="font-bold text-slate-800 text-lg flex items-center border-b pb-3 border-slate-100">
+                        <i class="fa-solid fa-sliders text-amber-500 mr-2"></i> Parameter Bangunan
+                    </h3>
+
+                    <!-- Input 1: Jumlah Pintu/Kamar -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Jumlah Pintu / Kamar Kontrakan</label>
+                        <div class="flex items-center space-x-3">
+                            <input type="range" id="input-pintu" min="1" max="20" value="4" oninput="calculateRAB()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                            <span id="val-pintu" class="w-12 text-center font-bold text-lg bg-amber-50 text-amber-700 py-1 rounded-lg border border-amber-200">4</span>
+                        </div>
+                    </div>
+
+                    <!-- Input 2: Dimensi Per Kamar -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Lebar Kamar (m)</label>
+                            <input type="number" id="input-lebar" value="3.5" min="2" max="10" step="0.5" onchange="calculateRAB()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none font-semibold text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Panjang Kamar (m)</label>
+                            <input type="number" id="input-panjang" value="6" min="3" max="15" step="0.5" onchange="calculateRAB()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none font-semibold text-slate-800">
+                        </div>
+                    </div>
+
+                    <!-- Input 3: Jumlah Lantai -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Jumlah Lantai</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="flex items-center justify-center p-3 border rounded-lg cursor-pointer transition hover:bg-slate-50 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50/50 font-medium text-sm">
+                                <input type="radio" name="lantai" value="1" checked onchange="calculateRAB()" class="hidden">
+                                <i class="fa-solid fa-house text-slate-500 mr-2"></i> 1 Lantai
+                            </label>
+                            <label class="flex items-center justify-center p-3 border rounded-lg cursor-pointer transition hover:bg-slate-50 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50/50 font-medium text-sm">
+                                <input type="radio" name="lantai" value="2" onchange="calculateRAB()" class="hidden">
+                                <i class="fa-solid fa-building text-slate-500 mr-2"></i> 2 Lantai
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Input 4: Jenis Pondasi Khas Samarinda -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">
+                            Tipe Pondasi (Kondisi Tanah Samarinda)
+                            <i class="fa-solid fa-circle-info text-slate-400 ml-1" title="Tanah Samarinda bervariasi dari Rawa/Gambut hingga Perbukitan"></i>
+                        </label>
+                        <select id="input-pondasi" onchange="calculateRAB()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 font-medium text-sm">
+                            <option value="ulin">Tongkat Kayu Ulin Kaltim (Lahan Rawa/Rendah)</option>
+                            <option value="cakar" selected>Cakar Ayam + Batu Gunung (Tanah Keras/Perbukitan)</option>
+                            <option value="pancang">Pancang Mini Pile + Sloof Beton (2 Lantai / Premium)</option>
+                        </select>
+                    </div>
+
+                    <!-- Input 5: Spesi Atap & Plafon -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Jenis Atap</label>
+                            <select id="input-atap" onchange="calculateRAB()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 font-medium text-sm">
+                                <option value="spandek" selected>Seng Spandek Zincalume</option>
+                                <option value="genteng-metal">Genteng Metal Pasir</option>
+                                <option value="seng-gelombang">Seng Gelombang Standar</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Kualitas Finishing</label>
+                            <select id="input-finishing" onchange="calculateRAB()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 font-medium text-sm">
+                                <option value="ekonomi">Ekonomi (Sederhana)</option>
+                                <option value="standar" selected>Standar (Keramik 40x40, Cat STD)</option>
+                                <option value="premium">Premium (Granit 60x60, Saniter Bagus)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Input 6: Upah Borongan Tukang Samarinda -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Tarif Upah Borongan Tukang (per m²)</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 font-semibold text-sm">Rp</span>
+                            <input type="number" id="input-upah-m2" value="750000" min="400000" max="2000000" step="50000" onchange="calculateRAB()" class="w-full pl-10 p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 font-semibold text-slate-800 text-sm">
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1">*Rata-rata Samarinda & Kutai: Rp 650.000 - Rp 900.000 / m²</p>
+                    </div>
+
+                    <!-- Analisis Potensi Rent / Lokasi Samarinda -->
+                    <div class="p-4 bg-amber-50 rounded-xl border border-amber-200/80 space-y-3">
+                        <h4 class="font-bold text-amber-900 text-sm flex items-center">
+                            <i class="fa-solid fa-chart-line mr-2 text-amber-600"></i> Similasi Pasaran Sewa Samarinda
+                        </h4>
+                        <div>
+                            <label class="block text-xs font-medium text-amber-900 mb-1">Lokasi Strategis Target</label>
+                            <select id="input-lokasi-samarinda" onchange="updateSuggestedRent()" class="w-full p-2 bg-white border border-amber-300 rounded-lg text-xs font-medium">
+                                <option value="unmul">Area UNMUL (Gunung Kelua / M Yamin) - Mahasiswa</option>
+                                <option value="airputih">Air Putih / Juanda / Ulu - Pekerja & Keluarga</option>
+                                <option value="sambutan">Sambutan / Pelita - Pemukiman berkembang</option>
+                                <option value="seberang">Samarinda Seberang / Harapan Indah</option>
+                                <option value="custom">Kustomisasi Manual</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-amber-900 mb-1">Estimasi Harga Sewa / Kamar / Bulan</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs">Rp</span>
+                                <input type="number" id="input-harga-sewa" value="950000" step="50000" onchange="calculateRAB()" class="w-full pl-9 p-2 bg-white border border-amber-300 rounded-lg text-xs font-bold text-slate-800">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results & Output View (7 cols) -->
+                <div class="lg:col-span-7 space-y-6">
+                    
+                    <!-- High-level Summary Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                            <p class="text-xs font-bold uppercase text-slate-500">Total Luas Bangunan</p>
+                            <p id="res-total-luas" class="text-2xl font-black text-slate-900 mt-1">84 <span class="text-sm font-medium text-slate-500">m²</span></p>
+                            <p id="res-luas-detail" class="text-xs text-slate-500 mt-1">4 pintu @ 21 m²</p>
+                        </div>
+
+                        <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-md border border-slate-800">
+                            <p class="text-xs font-bold uppercase text-amber-400">Estimasi Total RAB</p>
+                            <p id="res-total-rab" class="text-2xl font-black text-amber-400 mt-1">Rp 0</p>
+                            <p id="res-biaya-m2" class="text-xs text-slate-300 mt-1">Rp 0 / m²</p>
+                        </div>
+
+                        <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl shadow-sm">
+                            <p class="text-xs font-bold uppercase text-emerald-800">Potensi Payback (ROI)</p>
+                            <p id="res-payback-years" class="text-2xl font-black text-emerald-700 mt-1">0 <span class="text-sm font-medium text-emerald-600">Tahun</span></p>
+                            <p id="res-omset-bulan" class="text-xs text-emerald-700 font-semibold mt-1">Omset: Rp 0 /bln</p>
+                        </div>
+                    </div>
+
+                    <!-- Cost Visual Breakdown Chart -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                        <h4 class="font-bold text-slate-800 text-sm mb-3 flex items-center justify-between">
+                            <span><i class="fa-solid fa-chart-pie text-sky-600 mr-2"></i> Proporsi Biaya Kontrakan</span>
+                            <span class="text-xs text-slate-500">Material vs Upah Tukang</span>
+                        </h4>
+                        <div class="h-44 relative">
+                            <canvas id="rabChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Detailed RAB Item Table -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                            <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                                <i class="fa-solid fa-list-check text-amber-500 mr-2"></i> Rincian Kebutuhan Material & Pekerjaan
+                            </h4>
+                            <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200 text-slate-700 rounded-full">
+                                Patokan Samarinda
+                            </span>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                                <thead>
+                                    <tr class="bg-slate-100/70 text-slate-600 font-bold border-b border-slate-200">
+                                        <th class="p-3">Kategori / Item Material</th>
+                                        <th class="p-3">Estimasi Volume</th>
+                                        <th class="p-3">Harga Satuan (Rp)</th>
+                                        <th class="p-3 text-right">Subtotal Biaya (Rp)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rab-table-body" class="divide-y divide-slate-100 text-slate-700">
+                                    <!-- Dynamic Rows Generated by JS -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="bg-amber-50 font-bold text-slate-900 border-t border-amber-200">
+                                        <td colspan="3" class="p-3.5 text-right uppercase">Total Estimasi Keseluruhan:</td>
+                                        <td id="table-total-rab" class="p-3.5 text-right text-base text-amber-700">Rp 0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Catatan Teknis Konstruksi Samarinda -->
+                    <div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 text-xs text-sky-900 space-y-1">
+                        <p class="font-bold flex items-center gap-1.5 text-sky-950">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i> Tips Bangun Kontrakan di Samarinda:
+                        </p>
+                        <ul class="list-disc list-inside space-y-1 pl-1 text-slate-700">
+                            <li><strong>Lahan Gambut / Pasang Surut:</strong> Gunakan tiang pancang Kayu Ulin Kaltim ukuran minimal 10x10cm agar tahan puluhan tahun terhadap air asin/asam.</li>
+                            <li><strong>Sumber Pasir:</strong> Gunakan Pasir Mahakam untuk pasangan bata & pondasi, dan Pasir Palu (impor Sulbar/Sulteng) jika butuh pengecoran mutu tinggi.</li>
+                            <li><strong>Ketahanan Atap:</strong> Karena kelembaban tinggi Samarinda, lapisi rangka baja ringan dengan spandek galvalum tebal min 0.30mm.</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: MANAJEMEN STOK & KATALOG MATERIAL -->
+        <section id="tab-inventory" class="tab-content hidden space-y-6">
+            <!-- Header section -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Katalog & Stok Material Toko Bangunan</h2>
+                    <p class="text-slate-500 text-sm">Kelola inventaris toko bangunan, pembaruan harga, dan pantau batas minimal stok.</p>
+                </div>
+                <button onclick="openAddProductModal()" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-sm rounded-xl transition shadow flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Tambah Material Baru
+                </button>
+            </div>
+
+            <!-- Filters & Search -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-3 justify-between">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
+                    <input type="text" id="inventory-search" onkeyup="filterInventory()" placeholder="Cari nama material, merek, atau kode (mis. Ulin, Semen, Besi)..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div class="flex gap-2">
+                    <select id="inventory-category-filter" onchange="filterInventory()" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-700">
+                        <option value="ALL">Semua Kategori</option>
+                        <option value="Semen & Pasir">Semen & Pasir</option>
+                        <option value="Kayu & Ulin">Kayu & Ulin Kaltim</option>
+                        <option value="Besi & Baja">Besi & Baja</option>
+                        <option value="Atap & Plafon">Atap & Plafon</option>
+                        <option value="Keramik & Cat">Keramik & Cat</option>
+                        <option value="Saniter & Pipa">Saniter & Pipa</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Inventory Table -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-800 text-white font-semibold">
+                                <th class="p-3.5">Kode</th>
+                                <th class="p-3.5">Nama Material</th>
+                                <th class="p-3.5">Kategori</th>
+                                <th class="p-3.5">Harga Jual (Rp)</th>
+                                <th class="p-3.5">Stok Saat Ini</th>
+                                <th class="p-3.5">Status Stok</th>
+                                <th class="p-3.5 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body" class="divide-y divide-slate-100 text-slate-700">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: KASIR POINT OF SALE (POS) -->
+        <section id="tab-pos" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Material Selector (7 cols) -->
+                <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <div class="flex justify-between items-center border-b pb-3 border-slate-100">
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-cart-plus text-amber-500 mr-2"></i> Pilih Material Bangunan
+                        </h2>
+                        <span class="text-xs text-slate-500">Klik item untuk menambah ke keranjang</span>
+                    </div>
+
+                    <!-- Search & Filter -->
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
+                        <input type="text" id="pos-search" onkeyup="renderPOSGrid()" placeholder="Cari barang cepat..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm">
+                    </div>
+
+                    <!-- Material Cards Grid -->
+                    <div id="pos-items-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[500px] overflow-y-auto pr-1">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Shopping Cart & Checkout (5 cols) -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center border-b pb-3 border-slate-100">
+                            <h3 class="font-bold text-slate-900 text-lg flex items-center">
+                                <i class="fa-solid fa-receipt text-slate-600 mr-2"></i> Nota Transaksi
+                            </h3>
+                            <button onclick="clearCart()" class="text-xs text-rose-600 font-semibold hover:underline">
+                                Reset Cart
+                            </button>
+                        </div>
+
+                        <!-- Cart Items List -->
+                        <div id="pos-cart-list" class="divide-y divide-slate-100 my-3 max-h-[300px] overflow-y-auto text-sm">
+                            <!-- Items inserted dynamically -->
+                            <p class="text-center text-slate-400 py-8 text-xs">Keranjang masih kosong.</p>
+                        </div>
+                    </div>
+
+                    <!-- Cart Summary & Action -->
+                    <div class="border-t border-slate-200 pt-4 space-y-3">
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Subtotal</span>
+                            <span id="pos-subtotal" class="font-semibold text-slate-800">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>PPN (11% opsional)</span>
+                            <span id="pos-tax" class="font-semibold text-slate-800">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-black text-slate-900 pt-1 border-t border-dashed">
+                            <span>Total Penjualan:</span>
+                            <span id="pos-grand-total" class="text-amber-600">Rp 0</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Pembeli / Kontraktor</label>
+                            <input type="text" id="pos-customer-name" placeholder="mis. Pak Joko (Proyek Sambutan)" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-xs">
+                        </div>
+
+                        <button onclick="checkoutPOS()" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-xl shadow transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-print"></i> Process & Cetak Nota Sales
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: HARGA PASAR BANYAK DIGUNAKAN DI SAMARINDA -->
+        <section id="tab-price-reference" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Daftar Referensi Harga Material Samarinda & Kaltim</h2>
+                <p class="text-slate-600 text-sm mb-6">
+                    Estimasi rata-rata harga toko bangunan eceran & grosir di wilayah Samarinda, Tenggarong, Balikpapan (Update 2026).
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Category 1 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+                        <h3 class="font-bold text-slate-800 border-b pb-2 mb-3 flex items-center">
+                            <i class="fa-solid fa-tree text-amber-700 mr-2"></i> Material Kayu Ulin & Lokal
+                        </h3>
+                        <ul class="space-y-2 text-xs text-slate-700">
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Kayu Ulin 10x10 x 4m (Pancang)</span>
+                                <span class="font-bold">Rp 185.000 / btg</span>
+                            </li>
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Kayu Ulin 5x10 x 4m (Kaso)</span>
+                                <span class="font-bold">Rp 95.000 / btg</span>
+                            </li>
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Papan Ulin 2x20 x 4m</span>
+                                <span class="font-bold">Rp 120.000 / lbr</span>
+                            </li>
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Kayu Meranti 5x7 x 4m</span>
+                                <span class="font-bold">Rp 45.000 / btg</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Category 2 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+                        <h3 class="font-bold text-slate-800 border-b pb-2 mb-3 flex items-center">
+                            <i class="fa-solid fa-cubes text-slate-600 mr-2"></i> Semen & Agregat Pasir
+                        </h3>
+                        <ul class="space-y-2 text-xs text-slate-700">
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Semen Tonasa / Gresik 50kg</span>
+                                <span class="font-bold">Rp 78.000 / sak</span>
+                            </li>
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Pasir Mahakam (Sedang/Halus)</span>
+                                <span class="font-bold">Rp 320.000 / ret (PickUp)</span>
+                            </li>
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Pasir Palu (Cor Mutu Tinggi)</span>
+                                <span class="font-bold">Rp 550.000 / ret</span>
+                            </li>
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Batu Split 2/3 (Batu Pecah)</span>
+                                <span class="font-bold">Rp 480.000 / m³</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Category 3 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+                        <h3 class="font-bold text-slate-800 border-b pb-2 mb-3 flex items-center">
+                            <i class="fa-solid fa-layer-group text-sky-600 mr-2"></i> Besi, Seng & Atap
+                        </h3>
+                        <ul class="space-y-2 text-xs text-slate-700">
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Besi Beton Polos 10mm Sni</span>
+                                <span class="font-bold">Rp 78.000 / btg</span>
+                            </li>
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Besi Ulir 12mm SNI</span>
+                                <span class="font-bold">Rp 112.000 / btg</span>
+                            </li>
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Seng Spandek 0.30mm (m¹)</span>
+                                <span class="font-bold">Rp 52.000 / m</span>
+                            </li>
+                            <li class="flex justify-between border-b pb-1 border-slate-200/60">
+                                <span>Baja Ringan Canal C75.75</span>
+                                <span class="font-bold">Rp 98.000 / btg</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: Tambah Material Baru -->
+    <div id="modal-add-product" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3 border-slate-100">
+                <h3 class="font-bold text-slate-900 text-lg">Tambah Inventaris Material</h3>
+                <button onclick="closeAddProductModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="form-add-product" onsubmit="saveNewProduct(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Nama Barang / Spesifikasi</label>
+                    <input type="text" id="new-prod-name" required placeholder="mis. Besi Beton 8mm Full SNI" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Kategori</label>
+                        <select id="new-prod-cat" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm">
+                            <option value="Semen & Pasir">Semen & Pasir</option>
+                            <option value="Kayu & Ulin">Kayu & Ulin</option>
+                            <option value="Besi & Baja">Besi & Baja</option>
+                            <option value="Atap & Plafon">Atap & Plafon</option>
+                            <option value="Keramik & Cat">Keramik & Cat</option>
+                            <option value="Saniter & Pipa">Saniter & Pipa</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Satuan</label>
+                        <input type="text" id="new-prod-unit" required placeholder="sak / btg / m³ / m²" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Harga Jual (Rp)</label>
+                        <input type="number" id="new-prod-price" required min="100" placeholder="75000" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Stok Awal</label>
+                        <input type="number" id="new-prod-stock" required min="0" placeholder="100" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm">
+                    </div>
+                </div>
+                <div class="pt-3 flex gap-2">
+                    <button type="button" onclick="closeAddProductModal()" class="w-1/2 py-2.5 bg-slate-200 text-slate-700 font-bold rounded-xl text-sm">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-xl text-sm">Simpan Barang</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Receipt / Nota Print View -->
+    <div id="modal-receipt" class="fixed inset-0 bg-slate-900/70 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 print-shadow-none">
+            <div id="receipt-content" class="text-slate-800 text-xs font-mono space-y-3">
+                <div class="text-center border-b border-dashed border-slate-400 pb-3">
+                    <h2 class="font-bold text-base text-slate-900">TB SAMARINDA JAYA</h2>
+                    <p class="text-[10px]">Jl. M. Yamin No. 88, Samarinda, Kaltim</p>
+                    <p class="text-[10px]">Telp/WA: 0812-5555-9090</p>
+                </div>
+                <div class="flex justify-between text-[11px]">
+                    <span id="rec-date">Tgl: -</span>
+                    <span id="rec-customer">Plgn: Umum</span>
+                </div>
+                <div class="border-b border-dashed border-slate-300 pb-2">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-slate-300 text-[10px]">
+                                <th>Item</th>
+                                <th>Qty</th>
+                                <th class="text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rec-items-body">
+                            <!-- Items inserted dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="space-y-1 text-right font-bold text-xs">
+                    <div class="flex justify-between">
+                        <span>Total:</span>
+                        <span id="rec-total">Rp 0</span>
+                    </div>
+                </div>
+                <div class="text-center text-[10px] text-slate-500 pt-3 border-t border-dashed border-slate-300">
+                    <p>Terima Kasih atas Kunjungan Anda!</p>
+                    <p>Barang yang sudah dibeli tidak dapat ditukar.</p>
+                </div>
+            </div>
+            <div class="flex gap-2 no-print">
+                <button onclick="closeReceiptModal()" class="w-1/2 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Tutup</button>
+                <button onclick="window.print()" class="w-1/2 py-2 bg-amber-500 text-slate-900 font-bold rounded-xl text-xs">Cetak Nota</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global Material Inventory Dataset (Samarinda Pricing context)
+        let inventoryData = [
+            { id: 'MAT-001', name: 'Semen Tonasa / Gresik 50kg', category: 'Semen & Pasir', price: 78000, stock: 250, unit: 'sak' },
+            { id: 'MAT-002', name: 'Pasir Mahakam Kaltim', category: 'Semen & Pasir', price: 320000, stock: 45, unit: 'ret' },
+            { id: 'MAT-003', name: 'Pasir Palu Mutu Cor High Grade', category: 'Semen & Pasir', price: 550000, stock: 20, unit: 'ret' },
+            { id: 'MAT-004', name: 'Batu Split 2/3 (Batu Gunung)', category: 'Semen & Pasir', price: 480000, stock: 35, unit: 'm³' },
+            { id: 'MAT-005', name: 'Kayu Ulin 10x10 x 4m (Pancang/Tongkat)', category: 'Kayu & Ulin', price: 185000, stock: 120, unit: 'btg' },
+            { id: 'MAT-006', name: 'Kayu Ulin 5x10 x 4m (Gelagar)', category: 'Kayu & Ulin', price: 95000, stock: 80, unit: 'btg' },
+            { id: 'MAT-007', name: 'Besi Beton Polos 10mm SNI', category: 'Besi & Baja', price: 78000, stock: 300, unit: 'btg' },
+            { id: 'MAT-008', name: 'Besi Ulir 12mm SNI', category: 'Besi & Baja', price: 112000, stock: 180, unit: 'btg' },
+            { id: 'MAT-009', name: 'Baja Ringan Canal C75.75', category: 'Besi & Baja', price: 98000, stock: 220, unit: 'btg' },
+            { id: 'MAT-010', name: 'Atap Seng Spandek 0.30mm', category: 'Atap & Plafon', price: 52000, stock: 400, unit: 'm¹' },
+            { id: 'MAT-011', name: 'Genteng Metal Pasir Minimalis', category: 'Atap & Plafon', price: 48000, stock: 350, unit: 'lbr' },
+            { id: 'MAT-012', name: 'Bata Merah Lokal Samarinda', category: 'Semen & Pasir', price: 900, stock: 15000, unit: 'pcs' },
+            { id: 'MAT-013', name: 'Keramik Polos 40x40 White', category: 'Keramik & Cat', price: 68000, stock: 140, unit: 'dus' },
+            { id: 'MAT-014', name: 'Granit Tile 60x60 Cream Polished', category: 'Keramik & Cat', price: 185000, stock: 90, unit: 'dus' },
+            { id: 'MAT-015', name: 'Cat Tembok Nippon Paint Weatherbond 5kg', category: 'Keramik & Cat', price: 215000, stock: 40, unit: 'galon' },
+            { id: 'MAT-016', name: 'Kloset Jongkok Duty/TOTO', category: 'Saniter & Pipa', price: 195000, stock: 25, unit: 'unit' },
+            { id: 'MAT-017', name: 'Pipa PVC Wavin/Rucika 3 inci', category: 'Saniter & Pipa', price: 82000, stock: 60, unit: 'btg' }
+        ];
+
+        // POS Cart State
+        let posCart = [];
+        let rabChartInstance = null;
+
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Remove active states from nav buttons
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-slate-900', 'shadow');
+                btn.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-800');
+            });
+
+            // Show selected content
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            // Highlight button
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-amber-500', 'text-slate-900', 'shadow');
+                activeBtn.classList.remove('text-slate-300', 'hover:text-white', 'hover:bg-slate-800');
+            }
+
+            if(tabId === 'inventory') renderInventoryTable();
+            if(tabId === 'pos') renderPOSGrid();
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function calculateRAB() {
+            // Retrieve Form Values
+            const pintu = parseInt(document.getElementById('input-pintu').value);
+            document.getElementById('val-pintu').innerText = pintu;
+
+            const lebar = parseFloat(document.getElementById('input-lebar').value) || 3.5;
+            const panjang = parseFloat(document.getElementById('input-panjang').value) || 6;
+            const jumlahLantai = parseInt(document.querySelector('input[name="lantai"]:checked').value);
+            const pondasiType = document.getElementById('input-pondasi').value;
+            const atapType = document.getElementById('input-atap').value;
+            const finishingType = document.getElementById('input-finishing').value;
+            const upahPerM2 = parseFloat(document.getElementById('input-upah-m2').value) || 750000;
+            const sewaBulanPerKamar = parseFloat(document.getElementById('input-harga-sewa').value) || 950000;
+
+            // Compute Area Metrics
+            const luasSatuPintu = lebar * panjang;
+            const totalLuas = luasSatuPintu * pintu * jumlahLantai;
+
+            document.getElementById('res-total-luas').innerHTML = `${totalLuas.toFixed(1)} <span class="text-sm font-medium text-slate-500">m²</span>`;
+            document.getElementById('res-luas-detail').innerText = `${pintu} pintu (${jumlahLantai} Lt) @ ${luasSatuPintu.toFixed(1)} m²`;
+
+            // Calculate Base Material Estimations per m²
+            let pondasiCostPerM2 = 280000;
+            if(pondasiType === 'ulin') pondasiCostPerM2 = 320000; // Kayu Ulin tongkat + suai
+            if(pondasiType === 'pancang') pondasiCostPerM2 = 480000; // Mini pile / Pancang
+
+            let atapCostPerM2 = 180000;
+            if(atapType === 'genteng-metal') atapCostPerM2 = 230000;
+            if(atapType === 'seng-gelombang') atapCostPerM2 = 140000;
+
+            let finishingCostPerM2 = 450000;
+            if(finishingType === 'ekonomi') finishingCostPerM2 = 320000;
+            if(finishingType === 'premium') finishingCostPerM2 = 720000;
+
+            // Structure cost (Besi, Semen, Pasir, Bata)
+            const strukturCostPerM2 = 650000 * (jumlahLantai === 2 ? 1.25 : 1.0);
+
+            // Compute Total Material Cost
+            const totalMaterialM2 = pondasiCostPerM2 + atapCostPerM2 + finishingCostPerM2 + strukturCostPerM2;
+            const totalMaterialBiaya = totalMaterialM2 * totalLuas;
+
+            // Upah Tukang
+            const totalUpahBiaya = upahPerM2 * totalLuas;
+
+            // Total RAB
+            const totalRAB = totalMaterialBiaya + totalUpahBiaya;
+            const biayaPerM2 = totalRAB / totalLuas;
+
+            // Update Header Totals
+            document.getElementById('res-total-rab').innerText = formatRupiah(totalRAB);
+            document.getElementById('res-biaya-m2').innerText = `${formatRupiah(biayaPerM2)} / m²`;
+
+            // ROI Payback Calculations
+            const totalOmsetBulan = sewaBulanPerKamar * pintu;
+            const totalOmsetTahun = totalOmsetBulan * 12;
+            // Estimasi operasional/pemeliharaan 10%
+            const netOmsetTahun = totalOmsetTahun * 0.90; 
+            const paybackYears = netOmsetTahun > 0 ? (totalRAB / netOmsetTahun).toFixed(1) : 0;
+
+            document.getElementById('res-payback-years').innerHTML = `${paybackYears} <span class="text-sm font-medium text-emerald-600">Tahun</span>`;
+            document.getElementById('res-omset-bulan').innerText = `Omset Kotor: ${formatRupiah(totalOmsetBulan)} / bln`;
+
+            // Build Itemized RAB Table Rows
+            const items = [
+                {
+                    cat: 'Pondasi & Struktur Bawah',
+                    vol: `${(totalLuas * 0.35).toFixed(1)} m³`,
+                    unitPrice: pondasiCostPerM2 / 0.35,
+                    subtotal: pondasiCostPerM2 * totalLuas
+                },
+                {
+                    cat: 'Dinding, Semen & Pasir Mahakam',
+                    vol: `${(totalLuas * 2.8).toFixed(0)} m²`,
+                    unitPrice: (strukturCostPerM2 * 0.6) / 2.8,
+                    subtotal: strukturCostPerM2 * 0.6 * totalLuas
+                },
+                {
+                    cat: 'Besi Beton & Sloof Cor',
+                    vol: `${Math.round(totalLuas * 3.2)} btg`,
+                    unitPrice: 85000,
+                    subtotal: strukturCostPerM2 * 0.4 * totalLuas
+                },
+                {
+                    cat: 'Rangka Baja Ringan & Atap',
+                    vol: `${(totalLuas * 1.15).toFixed(1)} m²`,
+                    unitPrice: atapCostPerM2 / 1.15,
+                    subtotal: atapCostPerM2 * totalLuas
+                },
+                {
+                    cat: 'Keramik, Cat & Finishing Interior',
+                    vol: `${totalLuas} m²`,
+                    unitPrice: finishingCostPerM2,
+                    subtotal: finishingCostPerM2 * totalLuas
+                },
+                {
+                    cat: 'Upah Borongan Tukang Lokal',
+                    vol: `${totalLuas} m²`,
+                    unitPrice: upahPerM2,
+                    subtotal: totalUpahBiaya
+                }
+            ];
+
+            const tbody = document.getElementById('rab-table-body');
+            tbody.innerHTML = '';
+            items.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-800">${item.cat}</td>
+                    <td class="p-3 text-slate-600">${item.vol}</td>
+                    <td class="p-3 text-slate-600">${formatRupiah(item.unitPrice)}</td>
+                    <td class="p-3 text-right font-bold text-slate-900">${formatRupiah(item.subtotal)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('table-total-rab').innerText = formatRupiah(totalRAB);
+
+            // Update Chart Visuals
+            updateRABChart(totalMaterialBiaya, totalUpahBiaya);
+        }
+
+        function updateRABChart(materialCost, upahCost) {
+            const ctx = document.getElementById('rabChart').getContext('2d');
+            
+            if (rabChartInstance) {
+                rabChartInstance.destroy();
+            }
+
+            rabChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Material & Bahan Bangunan', 'Upah & Tenaga Kerja Borongan'],
+                    datasets: [{
+                        data: [materialCost, upahCost],
+                        backgroundColor: ['#0284c7', '#f59e0b'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: { size: 11, family: 'Inter' }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.label + ': ' + formatRupiah(context.raw);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSuggestedRent() {
+            const loc = document.getElementById('input-lokasi-samarinda').value;
+            const rentInput = document.getElementById('input-harga-sewa');
+
+            if(loc === 'unmul') rentInput.value = 1100000; // Mahasiswa / Ring 1 M Yamin
+            else if(loc === 'airputih') rentInput.value = 1250000; // Tengah Kota Juanda
+            else if(loc === 'sambutan') rentInput.value = 850000; // Daerah Pemukiman Baru
+            else if(loc === 'seberang') rentInput.value = 750000; // Seberang
+            
+            calculateRAB();
+        }
+
+        function renderInventoryTable(dataToRender = inventoryData) {
+            const tbody = document.getElementById('inventory-table-body');
+            tbody.innerHTML = '';
+
+            dataToRender.forEach(item => {
+                let badgeClass = 'bg-emerald-100 text-emerald-800';
+                let statusText = 'Tersedia';
+
+                if (item.stock <= 10) {
+                    badgeClass = 'bg-rose-100 text-rose-800';
+                    statusText = 'Hampir Habis!';
+                } else if (item.stock <= 50) {
+                    badgeClass = 'bg-amber-100 text-amber-800';
+                    statusText = 'Stok Menipis';
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition';
+                tr.innerHTML = `
+                    <td class="p-3.5 font-mono text-xs text-slate-500">${item.id}</td>
+                    <td class="p-3.5 font-bold text-slate-800">${item.name}</td>
+                    <td class="p-3.5 text-xs text-slate-600"><span class="px-2 py-1 bg-slate-100 rounded-md border">${item.category}</span></td>
+                    <td class="p-3.5 font-semibold text-slate-900">${formatRupiah(item.price)} / ${item.unit}</td>
+                    <td class="p-3.5 font-bold text-slate-800">${item.stock} ${item.unit}</td>
+                    <td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeClass}">${statusText}</span></td>
+                    <td class="p-3.5 text-center">
+                        <button onclick="quickEditStock('${item.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold mr-1">
+                            <i class="fa-solid fa-boxes-packing mr-1"></i> +Stok
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterInventory() {
+            const query = document.getElementById('inventory-search').value.toLowerCase();
+            const category = document.getElementById('inventory-category-filter').value;
+
+            const filtered = inventoryData.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(query) || item.id.toLowerCase().includes(query);
+                const matchesCat = (category === 'ALL' || item.category === category);
+                return matchesSearch && matchesCat;
+            });
+
+            renderInventoryTable(filtered);
+        }
+
+        function quickEditStock(id) {
+            const item = inventoryData.find(i => i.id === id);
+            if (!item) return;
+
+            const addQty = prompt(`Tambah stok untuk ${item.name} (Stok saat ini: ${item.stock}):`, "10");
+            if (addQty !== null && !isNaN(parseInt(addQty))) {
+                item.stock += parseInt(addQty);
+                renderInventoryTable();
+            }
+        }
+
+        function openAddProductModal() {
+            document.getElementById('modal-add-product').classList.remove('hidden');
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('modal-add-product').classList.add('hidden');
+        }
+
+        function saveNewProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-prod-name').value;
+            const category = document.getElementById('new-prod-cat').value;
+            const unit = document.getElementById('new-prod-unit').value;
+            const price = parseFloat(document.getElementById('new-prod-price').value);
+            const stock = parseInt(document.getElementById('new-prod-stock').value);
+
+            const newId = `MAT-0${inventoryData.length + 1}`;
+
+            inventoryData.push({
+                id: newId,
+                name: name,
+                category: category,
+                price: price,
+                stock: stock,
+                unit: unit
+            });
+
+            closeAddProductModal();
+            renderInventoryTable();
+            document.getElementById('form-add-product').reset();
+        }
+
+        function renderPOSGrid() {
+            const query = document.getElementById('pos-search').value.toLowerCase();
+            const grid = document.getElementById('pos-items-grid');
+            grid.innerHTML = '';
+
+            const items = inventoryData.filter(i => i.name.toLowerCase().includes(query));
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.onclick = () => addToCart(item.id);
+                card.className = "p-3 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:border-amber-500 hover:bg-amber-50/40 transition flex flex-col justify-between space-y-2";
+                card.innerHTML = `
+                    <div>
+                        <span class="text-[10px] text-slate-400 font-mono">${item.id}</span>
+                        <h4 class="font-bold text-slate-800 text-xs line-clamp-2 leading-tight">${item.name}</h4>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-amber-600">${formatRupiah(item.price)}</p>
+                        <p class="text-[10px] text-slate-500">Stok: ${item.stock} ${item.unit}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function addToCart(id) {
+            const item = inventoryData.find(i => i.id === id);
+            if (!item || item.stock <= 0) {
+                alert("Stok barang habis!");
+                return;
+            }
+
+            const cartItem = posCart.find(ci => ci.id === id);
+            if (cartItem) {
+                if(cartItem.qty < item.stock) {
+                    cartItem.qty++;
+                } else {
+                    alert("Jumlah melebihi stok yang tersedia!");
+                }
+            } else {
+                posCart.push({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    unit: item.unit,
+                    qty: 1
+                });
+            }
+
+            renderCart();
+        }
+
+        function updateCartQty(id, delta) {
+            const cartItem = posCart.find(ci => ci.id === id);
+            const origItem = inventoryData.find(i => i.id === id);
+
+            if (cartItem) {
+                cartItem.qty += delta;
+                if (cartItem.qty > origItem.stock) {
+                    cartItem.qty = origItem.stock;
+                    alert("Mencapai batas stok!");
+                }
+                if (cartItem.qty <= 0) {
+                    posCart = posCart.filter(ci => ci.id !== id);
+                }
+            }
+            renderCart();
+        }
+
+        function clearCart() {
+            posCart = [];
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartList = document.getElementById('pos-cart-list');
+            cartList.innerHTML = '';
+
+            if (posCart.length === 0) {
+                cartList.innerHTML = `<p class="text-center text-slate-400 py-8 text-xs">Keranjang masih kosong.</p>`;
+                document.getElementById('pos-subtotal').innerText = 'Rp 0';
+                document.getElementById('pos-tax').innerText = 'Rp 0';
+                document.getElementById('pos-grand-total').innerText = 'Rp 0';
+                return;
+            }
+
+            let subtotal = 0;
+
+            posCart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                subtotal += itemTotal;
+
+                const div = document.createElement('div');
+                div.className = "py-2 flex justify-between items-center";
+                div.innerHTML = `
+                    <div class="flex-1 pr-2">
+                        <p class="font-semibold text-slate-800 text-xs">${item.name}</p>
+                        <p class="text-[10px] text-slate-500">${formatRupiah(item.price)} / ${item.unit}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex items-center border rounded-lg bg-slate-50">
+                            <button onclick="updateCartQty('${item.id}', -1)" class="px-2 py-0.5 text-xs font-bold text-slate-600 hover:bg-slate-200 rounded-l">-</button>
+                            <span class="px-2 text-xs font-bold text-slate-800">${item.qty}</span>
+                            <button onclick="updateCartQty('${item.id}', 1)" class="px-2 py-0.5 text-xs font-bold text-slate-600 hover:bg-slate-200 rounded-r">+</button>
+                        </div>
+                        <span class="font-bold text-xs text-slate-900 w-20 text-right">${formatRupiah(itemTotal)}</span>
+                    </div>
+                `;
+                cartList.appendChild(div);
+            });
+
+            document.getElementById('pos-subtotal').innerText = formatRupiah(subtotal);
+            document.getElementById('pos-tax').innerText = formatRupiah(0); // Tax 0 for simplicity
+            document.getElementById('pos-grand-total').innerText = formatRupiah(subtotal);
+        }
+
+        function checkoutPOS() {
+            if (posCart.length === 0) {
+                alert("Keranjang masih kosong!");
+                return;
+            }
+
+            const customerName = document.getElementById('pos-customer-name').value || "Umum / Pelanggan";
+
+            // Deduct Stocks
+            posCart.forEach(ci => {
+                const item = inventoryData.find(i => i.id === ci.id);
+                if (item) {
+                    item.stock -= ci.qty;
+                }
+            });
+
+            // Populate Receipt Modal
+            document.getElementById('rec-date').innerText = `Tgl: ${new Date().toLocaleDateString('id-ID')}`;
+            document.getElementById('rec-customer').innerText = `Plgn: ${customerName}`;
+
+            const recBody = document.getElementById('rec-items-body');
+            recBody.innerHTML = '';
+            let total = 0;
+
+            posCart.forEach(item => {
+                const sub = item.price * item.qty;
+                total += sub;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-1">${item.name}</td>
+                    <td class="py-1">${item.qty} ${item.unit}</td>
+                    <td class="py-1 text-right">${formatRupiah(sub)}</td>
+                `;
+                recBody.appendChild(tr);
+            });
+
+            document.getElementById('rec-total').innerText = formatRupiah(total);
+
+            // Open Receipt Modal
+            document.getElementById('modal-receipt').classList.remove('hidden');
+
+            // Reset POS Cart
+            posCart = [];
+            renderCart();
+            renderPOSGrid();
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('modal-receipt').classList.add('hidden');
+        }
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                maximumFractionDigits: 0
+            }).format(number);
+        }
+
+        // Initialize Application on Window Load
+        window.onload = function() {
+            calculateRAB();
+        };
+    </script>
+</body>
+</html>
